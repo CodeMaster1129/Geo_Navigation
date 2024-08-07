@@ -43,13 +43,11 @@ def process_multiscale(image, model, scales=[0.5, 1, 2]):
         fmap_pos = torch.nonzero(detections[0].cpu()).t()
         del detections
         displacements = model.localization(dense_features)[0].cpu()
-        displacements_i = displacements[(
-         0, fmap_pos[(0, None[:None])], fmap_pos[(1, None[:None])], fmap_pos[(2, None[:None])])]
-        displacements_j = displacements[(
-         1, fmap_pos[(0, None[:None])], fmap_pos[(1, None[:None])], fmap_pos[(2, None[:None])])]
+        displacements_i = displacements[0, fmap_pos[0, :], fmap_pos[1, :], fmap_pos[2, :]]
+        displacements_j = displacements[1, fmap_pos[0, :], fmap_pos[1, :], fmap_pos[2, :]]
         del displacements
         mask = torch.min(torch.abs(displacements_i) < 0.5, torch.abs(displacements_j) < 0.5)
-        fmap_pos = fmap_pos[(None[:None], mask)]
+        fmap_pos = fmap_pos[:, mask]
         valid_displacements = torch.stack([
          displacements_i[mask],
          displacements_j[mask]],
@@ -57,7 +55,7 @@ def process_multiscale(image, model, scales=[0.5, 1, 2]):
         del mask
         del displacements_i
         del displacements_j
-        fmap_keypoints = fmap_pos[(1[:None], None[:None])].float() + valid_displacements
+        fmap_keypoints = fmap_pos[1:, :].float() + valid_displacements
         del valid_displacements
         try:
             raw_descriptors, _, ids = interpolate_dense_features(fmap_keypoints.to(device), dense_features[0])
@@ -65,23 +63,22 @@ def process_multiscale(image, model, scales=[0.5, 1, 2]):
             continue
         else:
             ids = ids.cpu()
-            fmap_pos = fmap_pos[(None[:None], ids)]
-            fmap_keypoints = fmap_keypoints[(None[:None], ids)]
+            fmap_pos = fmap_pos[:, ids]
+            fmap_keypoints = fmap_keypoints[:, ids]
             del ids
             keypoints = upscale_positions(fmap_keypoints, scaling_steps=2)
             del fmap_keypoints
             descriptors = F.normalize(raw_descriptors, dim=0).cpu()
             del raw_descriptors
-            keypoints[(0, None[:None])] *= h_init / h_level
-            keypoints[(1, None[:None])] *= w_init / w_level
+            keypoints[0, :] *= h_init / h_level
+            keypoints[1, :] *= w_init / w_level
             fmap_pos = fmap_pos.cpu()
             keypoints = keypoints.cpu()
             keypoints = torch.cat([
              keypoints,
              torch.ones([1, keypoints.size(1)]) * 1 / scale],
               dim=0)
-            scores = dense_features[(
-             0, fmap_pos[(0, None[:None])], fmap_pos[(1, None[:None])], fmap_pos[(2, None[:None])])].cpu() / (idx + 1)
+            scores = dense_features[0, fmap_pos[0, :], fmap_pos[1, :], fmap_pos[2, :]].cpu() / (idx + 1)
             del fmap_pos
             all_keypoints = torch.cat([all_keypoints, keypoints], dim=1)
             all_descriptors = torch.cat([all_descriptors, descriptors], dim=1)
@@ -101,4 +98,3 @@ def process_multiscale(image, model, scales=[0.5, 1, 2]):
         del all_descriptors
         return (keypoints, scores, descriptors)
 
-# okay decompiling lib/__pycache__\pyramid.cpython-38.pyc

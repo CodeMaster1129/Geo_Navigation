@@ -16,7 +16,6 @@ class DenseFeatureExtractionModule(nn.Module):
         self.use_relu = use_relu
 
     def forward(self, batch):
-        print("+++++++++++++++++++++", batch.shape)
         output = self.model(batch)
         if self.use_relu:
             output = F.relu(output)

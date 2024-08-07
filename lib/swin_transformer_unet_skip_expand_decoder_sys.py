@@ -4,7 +4,6 @@ import torch.utils.checkpoint as checkpoint
 from einops import rearrange
 from timm.models.layers import DropPath, to_2tuple, trunc_normal_
 
-
 class Mlp(nn.Module):
     def __init__(self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.):
         super().__init__()
@@ -329,7 +328,7 @@ class PatchMerging(nn.Module):
         flops = H * W * self.dim
         flops += (H // 2) * (W // 2) * 4 * self.dim * 2 * self.dim
         return flops
-
+##################################
 class PatchExpand(nn.Module):
     def __init__(self, input_resolution, dim, dim_scale=2, norm_layer=nn.LayerNorm):
         super().__init__()
@@ -353,7 +352,7 @@ class PatchExpand(nn.Module):
         x= self.norm(x)
 
         return x
-
+###################################
 class FinalPatchExpand_X4(nn.Module):
     def __init__(self, input_resolution, dim, dim_scale=4, norm_layer=nn.LayerNorm):
         super().__init__()
@@ -449,6 +448,7 @@ class BasicLayer(nn.Module):
             flops += self.downsample.flops()
         return flops
 
+####################################
 class BasicLayer_up(nn.Module):
     """ A basic Swin Transformer layer for one stage.
 
@@ -580,7 +580,7 @@ class SwinTransformerSys(nn.Module):
         patch_norm (bool): If True, add normalization after patch embedding. Default: True
         use_checkpoint (bool): Whether to use checkpointing to save memory. Default: False
     """
-
+    ########################################## params
     def __init__(self, img_size=224, patch_size=4, in_chans=3, num_classes=1000,
                  embed_dim=512, depths=[2, 2, 2, 2], depths_decoder=[1, 2, 2, 2], num_heads=[3, 6, 12, 24],
                  window_size=7, mlp_ratio=4., qkv_bias=True, qk_scale=None,
@@ -589,19 +589,15 @@ class SwinTransformerSys(nn.Module):
                  use_checkpoint=False, final_upsample="expand_first", **kwargs):
         super().__init__()
 
-        # print("SwinTransformerSys expand initial----depths:{};depths_decoder:{};drop_path_rate:{};num_classes:{}".format(depths,
-        # depths_decoder,drop_path_rate,num_classes))
-        # print("img --- size:", img_size)
-
         self.num_classes = num_classes
         self.num_layers = len(depths)
         self.embed_dim = embed_dim
         self.ape = ape
         self.patch_norm = patch_norm
         self.num_features = int(embed_dim * 2 ** (self.num_layers - 1))
-        self.num_features_up = int(embed_dim * 2)
+        self.num_features_up = int(embed_dim * 2)   #################################
         self.mlp_ratio = mlp_ratio
-        self.final_upsample = final_upsample
+        self.final_upsample = final_upsample         ##################
 
 
         # split image into non-overlapping patches
@@ -640,7 +636,7 @@ class SwinTransformerSys(nn.Module):
                                use_checkpoint=use_checkpoint)
             self.layers.append(layer)
         
-        # build decoder layers
+        ########################## build decoder layers
         self.layers_up = nn.ModuleList()
         self.concat_back_dim = nn.ModuleList()
         for i_layer in range(self.num_layers):

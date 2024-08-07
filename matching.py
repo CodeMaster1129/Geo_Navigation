@@ -26,15 +26,15 @@ start = time.perf_counter()
 
 # read left image
 image1_o = cv2.imread(imgfile1)
-image1 = cv2.resize(image1_o, (224,224))
+image1 = cv2.resize(image1_o, (448,448))
 image2_o = cv2.imread(imgfile2)
-image2 = cv2.resize(image2_o, (224,224))
+image2 = cv2.resize(image2_o, (448,448))
 print('read image time is %6.3f' % (time.perf_counter() - start))
 
 start0 = time.perf_counter()
 
-kps_left, sco_left, des_left = cnn_feature_extract(image1_o,  nfeatures = -1)
-kps_right, sco_right, des_right = cnn_feature_extract(image2_o,  nfeatures = -1)
+kps_left, sco_left, des_left = cnn_feature_extract(image1,  nfeatures = -1)
+kps_right, sco_right, des_right = cnn_feature_extract(image2,  nfeatures = -1)
 
 print('Feature_extract time is %6.3f, left: %6.3f,right %6.3f' % ((time.perf_counter() - start), len(kps_left), len(kps_right)))
 start = time.perf_counter()
