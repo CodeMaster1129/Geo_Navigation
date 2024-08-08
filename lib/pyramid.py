@@ -25,6 +25,7 @@ def process_multiscale(image, model, scales=[0.5, 1, 2]):
           align_corners=True)
         _, _, h_level, w_level = current_image.size()
         dense_features = model.dense_feature_extraction(current_image)
+        print("ddddddddddddddddddddd", dense_features.shape)
         del current_image
         _, _, h, w = dense_features.size()
         if previous_dense_features is not None:

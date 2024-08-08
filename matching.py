@@ -26,9 +26,9 @@ start = time.perf_counter()
 
 # read left image
 image1_o = cv2.imread(imgfile1)
-image1 = cv2.resize(image1_o, (448,448))
+image1 = cv2.resize(image1_o, (224,224))
 image2_o = cv2.imread(imgfile2)
-image2 = cv2.resize(image2_o, (448,448))
+image2 = cv2.resize(image2_o, (224,224))
 print('read image time is %6.3f' % (time.perf_counter() - start))
 
 start0 = time.perf_counter()
@@ -126,4 +126,4 @@ plotmatch.plot_matches(
 ax.axis('off')
 ax.set_title('')
 # plt.show()
-plt.savefig('/home/a409/users/huboni/Paper/locally_global_match_pnp/fig/fig-matching/0.png')
+plt.savefig('0.png')

@@ -9,7 +9,7 @@ use_cuda = torch.cuda.is_available()
 max_edge = 2500
 max_sum_edges = 5000
 
-def cnn_feature_extract(image, scales=[0.5, 1.0, 2], nfeatures=1000, model_type="swin", model_file=None):
+def cnn_feature_extract(image, scales=[1], nfeatures=1000, model_type="swin", model_file=None):
     if model_type == "swin":
         model = SwinU2Net(model_file=model_file,
           use_relu=True,

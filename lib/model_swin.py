@@ -4,9 +4,9 @@ import torch.nn.functional as F
 from .swin_unet import SwinUnet
 
 class DenseFeatureExtractionModule(nn.Module):
-    def __init__(self, use_relu=True, use_cuda=True):
+    def __init__(self, img_size = 224, use_relu=True, use_cuda=True):
         super(DenseFeatureExtractionModule, self).__init__()
-        self.model = SwinUnet().cuda()
+        self.model = SwinUnet(img_size = img_size).cuda()
 
         if use_cuda:
             self.model = self.model.cuda()
@@ -23,11 +23,11 @@ class DenseFeatureExtractionModule(nn.Module):
 
 
 class SwinU2Net(nn.Module):
-    def __init__(self, model_file=None, use_relu=True, use_cuda=True):
+    def __init__(self, img_size= 224, model_file=None, use_relu=True, use_cuda=True):
         super(SwinU2Net, self).__init__()
 
         self.dense_feature_extraction = DenseFeatureExtractionModule(
-            use_relu=use_relu, use_cuda=use_cuda
+            img_size = img_size, use_relu=use_relu, use_cuda=use_cuda
         )
 
         self.detection = HardDetectionModule()

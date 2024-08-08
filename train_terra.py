@@ -1,20 +1,11 @@
 import argparse
-
 import numpy as np
-
 import os
-
 import shutil
-
 import torch
 import torch.optim as optim
-
 from torch.utils.data import DataLoader
-
 from tqdm import tqdm
-
-import warnings
-
 from lib.dataset_terra import TerraDataset
 from lib.exceptions import NoGradientError
 from lib.loss import loss_function
@@ -22,20 +13,16 @@ from lib.full_model.model_swin_unet_d2 import Swin_D2UNet
 from lib.full_model.model_unet import U2Net
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
-
 # CUDA
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
-
 # Seed
 torch.manual_seed(1)
 if use_cuda:
     torch.cuda.manual_seed(1)
 np.random.seed(1)
-
 # Argument parsing
 parser = argparse.ArgumentParser(description='Training script')
-
 parser.add_argument(
     '--dataset_path', type=str,
     help='path to the dataset',
@@ -46,7 +33,6 @@ parser.add_argument(
     help='path to the processed scenes',
     default='/home/a409/users/huboni/Projects/dataset/TerraTrack/process_output_query_ref_500'
 )
-
 parser.add_argument(
     '--preprocessing', type=str, default='torch',
     help='image preprocessing (caffe or torch)'
@@ -55,7 +41,6 @@ parser.add_argument(
     '--model_file', type=str, default='models/d2_ots.pth',
     help='path to the full model'
 )
-
 parser.add_argument(
     '--num_epochs', type=int, default=100,
     help='number of training epochs'
@@ -73,13 +58,11 @@ parser.add_argument(
     '--num_workers', type=int, default=4,
     help='number of workers for data loading'
 )
-
 parser.add_argument(
     '--use_validation', dest='use_validation', action='store_true',
     help='use the validation split'
 )
 parser.set_defaults(use_validation=True)
-
 parser.add_argument(
     '--log_interval', type=int, default=2000,
     help='loss logging interval'
@@ -89,18 +72,15 @@ parser.add_argument(
     help='plot training pairs'
 )
 parser.set_defaults(plot=True)
-
 parser.add_argument(
     '--checkpoint_directory', type=str, default='checkpoints',
     help='directory for training checkpoints'
 )
-
 parser.add_argument(
     '--net', type=str, default='vgg',
     help='choose net vgg or swin'
 )
 args = parser.parse_args()
-
 print(args)
 
 # Create the folders for plotting if need be
